@@ -17,7 +17,12 @@ const SocketProvider = ({ children, url }: SocketProviderProps) => {
 
     useEffect(() => {
         const pageIsHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
-        const origin = url || (pageIsHttps ? window.location.origin : VPS_URL || window.location.origin);
+        // Luôn ưu tiên same-origin để Next rewrite /socket.io → VPS (local + Vercel).
+        const origin =
+            url ||
+            (typeof window !== 'undefined'
+                ? window.location.origin
+                : VPS_URL || '');
         if (!origin) {
             return;
         }

