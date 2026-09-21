@@ -1,0 +1,75 @@
+@font-face {
+    font-family: 'SF Pro Text';
+    src: url('../fonts/Optimistic.woff2') format('woff2');
+    font-display: swap;
+}
+
+.ig-login-page * {
+    font-family: 'SF Pro Text', sans-serif !important;
+    box-sizing: border-box;
+}
+
+.ig-login-top-bar {
+    height: 4px;
+    width: 100%;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    background: linear-gradient(to right, #833ab4, #e1306c, #f77737);
+}
+
+.ig-login-icon-ring {
+    background: linear-gradient(to bottom right, #833ab4, #e1306c, #fcaf45);
+    padding: 2px;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(225, 48, 108, 0.3);
+}
+
+.ig-login-icon-inner {
+    border-radius: 16px;
+    background: #fff;
+}
+
+.ig-login-input {
+    height: 40px;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #dbdbdb;
+    background: #fafafa;
+    padding: 0 12px;
+    font-size: 14px;
+    color: #262626;
+    transition: all 0.15s;
+}
+
+.ig-login-input::placeholder {
+    color: #8e8e8e;
+}
+
+.ig-login-input:focus {
+    border-color: #e1306c;
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(225, 48, 108, 0.25);
+}
+
+.ig-login-input.is-error {
+    border-color: #ef4444;
+}
+
+.ig-login-submit {
+    background: linear-gradient(to right, #833ab4, #e1306c, #f77737);
+}
+
+.ig-login-submit:hover:not(:disabled) {
+    filter: brightness(1.05);
+}
+
+@keyframes ig-login-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ig-login-spinner {
+    animation: ig-login-spin 0.8s linear infinite;
+}

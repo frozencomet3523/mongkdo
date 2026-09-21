@@ -1,0 +1,24 @@
+.policy-violation-notice__continue-wrap {
+    padding-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .policy-violation-notice__continue-wrap {
+        padding-top: 3.25rem;
+    }
+}
+
+button.policy-violation-notice__continue {
+    border-radius: 12px !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    box-shadow: none !important;
+    background-image: none !important;
+    margin-top: 0 !important;
+}
+
+@media (min-width: 640px) {
+    button.policy-violation-notice__continue {
+        border-radius: 16px !important;
+    }
+}
