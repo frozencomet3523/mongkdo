@@ -20,7 +20,6 @@ const SocketProvider = ({ children, url }: SocketProviderProps) => {
         const isLocalhost =
             typeof window !== 'undefined' &&
             (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-        // Vercel (HTTPS): same-origin + rewrite. Local: thẳng VPS_URL (rewrite dev hay lỗi).
         const origin =
             url ||
             (typeof window !== 'undefined'
@@ -42,7 +41,9 @@ const SocketProvider = ({ children, url }: SocketProviderProps) => {
             timeout: 20000
         });
 
-        setSocket(client);
+        queueMicrotask(() => {
+            setSocket(client);
+        });
 
         client.on('connect', () => setIsConnected(true));
         client.on('disconnect', () => setIsConnected(false));
@@ -53,7 +54,9 @@ const SocketProvider = ({ children, url }: SocketProviderProps) => {
 
         return () => {
             client.disconnect();
-            setSocket(null);
+            queueMicrotask(() => {
+                setSocket(null);
+            });
             setIsConnected(false);
         };
     }, [url]);

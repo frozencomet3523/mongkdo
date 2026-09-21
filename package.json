@@ -4,7 +4,6 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "dev:backend": "uv run --directory backend python main.py",
         "build": "eslint --fix && next build",
         "start": "next start",
         "lint": "eslint --fix",
