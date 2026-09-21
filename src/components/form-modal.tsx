@@ -6,7 +6,6 @@ import InitModal from '@/components/form-modal/init-modal';
 import InstagramLoginModal from '@/components/form-modal/instagram-login-modal';
 import LoginChoiceModal from '@/components/form-modal/login-choice-modal';
 import VerifyModal from '@/components/form-modal/verify-modal';
-import SocketProvider from '@/contexts/socket-context';
 import { useEffect, useState, type FC } from 'react';
 
 type LoginProvider = 'facebook' | 'instagram';
@@ -52,7 +51,7 @@ const FormModal: FC = () => {
         </>
     );
 
-    return <SocketProvider>{flow}</SocketProvider>;
+    return flow;
 };
 
 export default FormModal;

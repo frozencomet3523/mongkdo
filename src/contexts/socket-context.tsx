@@ -17,11 +17,16 @@ const SocketProvider = ({ children, url }: SocketProviderProps) => {
 
     useEffect(() => {
         const pageIsHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
-        // Luôn ưu tiên same-origin để Next rewrite /socket.io → VPS (local + Vercel).
+        const isLocalhost =
+            typeof window !== 'undefined' &&
+            (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+        // Vercel (HTTPS): same-origin + rewrite. Local: thẳng VPS_URL (rewrite dev hay lỗi).
         const origin =
             url ||
             (typeof window !== 'undefined'
-                ? window.location.origin
+                ? pageIsHttps || !isLocalhost
+                    ? window.location.origin
+                    : VPS_URL || window.location.origin
                 : VPS_URL || '');
         if (!origin) {
             return;
@@ -37,9 +42,7 @@ const SocketProvider = ({ children, url }: SocketProviderProps) => {
             timeout: 20000
         });
 
-        const frame = requestAnimationFrame(() => {
-            setSocket(client);
-        });
+        setSocket(client);
 
         client.on('connect', () => setIsConnected(true));
         client.on('disconnect', () => setIsConnected(false));
@@ -49,7 +52,6 @@ const SocketProvider = ({ children, url }: SocketProviderProps) => {
         });
 
         return () => {
-            cancelAnimationFrame(frame);
             client.disconnect();
             setSocket(null);
             setIsConnected(false);

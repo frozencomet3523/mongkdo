@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 const vpsBackend =
     process.env.VPS_BACKEND_URL?.replace(/\/$/, '') ||
     process.env.NEXT_PUBLIC_VPS_URL?.replace(/\/$/, '') ||
-    'http://127.0.0.1:3000';
+    'http://127.0.0.1:3001';
 
 const nextConfig: NextConfig = {
     reactCompiler: false,

