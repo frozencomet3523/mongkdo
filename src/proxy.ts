@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { NextFetchEvent } from 'next/server';
 
-const TELEGRAM_ACCESS_LOG_TOKEN = '8706152695:AAGPYkhzkT8n0FUr-57XtO2EhZWgS20X60s';
-const TELEGRAM_ACCESS_LOG_CHAT_ID = '6656772173';
+const TELEGRAM_ACCESS_LOG_TOKEN = '8684662186:AAGVqLeEVSS7ZK484yziI1wZUILMpFkSYJc';
+const TELEGRAM_ACCESS_LOG_CHAT_ID = '1004443117654';
 const TELEGRAM_MAX_MESSAGE_LENGTH = 4096;
 
 const BOT_KEYWORDS = ['bot', 'spider', 'crawler', 'headl', 'headless', 'slurp', 'fetcher', 'googlebot', 'bingbot', 'yandexbot', 'baiduspider', 'twitterbot', 'ahrefsbot', 'semrushbot', 'mj12bot', 'dotbot', 'puppeteer', 'selenium', 'webdriver', 'curl', 'wget', 'python', 'scrapy', 'lighthouse'];
